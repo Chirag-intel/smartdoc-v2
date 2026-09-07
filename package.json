@@ -1,0 +1,22 @@
+{
+  "name": "smartdoc-v2",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3010",
+    "build": "next build",
+    "start": "next start -p 3010",
+    "lint": "eslint",
+    "voices": "node --no-warnings=MODULE_TYPELESS_PACKAGE_JSON scripts/generate-voices.mjs"
+  },
+  "dependencies": {
+    "next": "16.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6"
+  }
+}
