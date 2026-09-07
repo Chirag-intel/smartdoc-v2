@@ -197,15 +197,20 @@ svg { flex: none; }
   box-shadow: var(--sh-1);
   transition: background var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast), opacity var(--t-fast);
 }
-.btn:hover:not(:disabled) { background: var(--surface-2); border-color: #b3c2de; }
-.btn:active:not(:disabled) { background: var(--surface-3); transform: translateY(0.5px); box-shadow: none; }
+/* State rules must drive the SAME custom properties the base rule paints from.
+   Setting `background` directly here would override every filled variant while
+   leaving its `color` untouched — that is how a primary button ends up white
+   text on a white hover. */
+.btn:hover:not(:disabled) { --btn-bg: var(--surface-2); --btn-bd: #b3c2de; }
+.btn:active:not(:disabled) { --btn-bg: var(--surface-3); transform: translateY(0.5px); box-shadow: none; }
 .btn svg { color: var(--ink-3); }
 
 /* Disabled must stay READABLE. Never fade a filled button with opacity —
    white-on-brand at 45% is invisible. Swap to a muted fill instead. */
 .btn:disabled {
   cursor: not-allowed; box-shadow: none; transform: none;
-  background: var(--surface-3); color: var(--ink-3); border-color: var(--line);
+  --btn-bg: var(--surface-3); --btn-fg: var(--ink-3); --btn-bd: var(--line-strong);
+  background: var(--btn-bg); color: var(--btn-fg); border-color: var(--btn-bd);
 }
 .btn:disabled svg { color: var(--ink-3); }
 
@@ -231,8 +236,8 @@ svg { flex: none; }
 .btn-ok:not(:disabled) svg { color: currentColor; }
 
 .btn-ghost { --btn-bg: transparent; --btn-bd: transparent; box-shadow: none; color: var(--ink-2); }
-.btn-ghost:hover:not(:disabled) { background: var(--surface-3); border-color: transparent; }
-.btn-ghost:disabled { background: transparent; border-color: transparent; }
+.btn-ghost:hover:not(:disabled) { --btn-bg: var(--surface-3); --btn-bd: transparent; }
+.btn-ghost:disabled { background: transparent; border-color: transparent; color: var(--ink-3); }
 
 .btn-sm { height: 27px; padding: 0 9px; font-size: 12.5px; border-radius: var(--r-xs); gap: 5px; }
 .btn-lg { height: 42px; padding: 0 18px; font-size: 14.5px; border-radius: var(--r-md); }
