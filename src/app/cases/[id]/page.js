@@ -55,8 +55,9 @@ export default function CaseDetailPage({ params }) {
             .then(json => {
                 if (!alive) return;
                 if (json.case) setData(json.case);
-                if (new URLSearchParams(window.location.search).get('send_link')) {
-                    setDialog({ mode: 'send' });
+                const q = new URLSearchParams(window.location.search);
+                if (q.get('send_link') || q.get('remind')) {
+                    setDialog({ mode: q.get('remind') ? 'remind' : 'send' });
                     window.history.replaceState({}, '', window.location.pathname);
                 }
             })
@@ -180,10 +181,17 @@ export default function CaseDetailPage({ params }) {
             actions={
                 <>
                     <Button size="sm" icon="refresh" onClick={load} loading={refreshing}>Refresh</Button>
-                    {canRemind && <Button size="sm" icon="bell" onClick={() => openDialog('remind')}>Remind</Button>}
-                    <Button size="sm" variant="primary" icon="link"
-                        disabled={waiting + failed === 0}
-                        onClick={() => openDialog('send')}>Send link</Button>
+                    {/* The primary button is whatever moves the case forward right now. */}
+                    {canRemind ? (
+                        <>
+                            <Button size="sm" icon="link" onClick={() => openDialog('send')}>New link</Button>
+                            <Button size="sm" variant="primary" icon="bell" onClick={() => openDialog('remind')}>Remind</Button>
+                        </>
+                    ) : (
+                        <Button size="sm" variant="primary" icon="link"
+                            disabled={waiting + failed === 0}
+                            onClick={() => openDialog('send')}>Send link</Button>
+                    )}
                 </>
             }
         >
@@ -203,6 +211,42 @@ export default function CaseDetailPage({ params }) {
                         </div>
                     </div>
                 </div>
+
+                {(() => {
+                    const rejectedDocs = docs.filter(d => d.status === 'rejected');
+                    const lastLink = liveLinks[liveLinks.length - 1];
+                    let step;
+                    if (docs.length && done === docs.length) {
+                        step = { tone: 'ok', icon: 'checkCircle', title: 'All documents verified',
+                            text: `Nothing left to collect${data.completedAt ? ` — closed ${fmtDate(data.completedAt)}` : ''}.` };
+                    } else if (rejectedDocs.length === 1) {
+                        step = { tone: 'bad', icon: 'alert', title: `${docLabel(rejectedDocs[0])} was rejected`,
+                            text: rejectedDocs[0].validationResult?.message || 'The upload did not pass validation.',
+                            action: <Button variant="primary" icon="rotate" onClick={() => openDialog('retrigger', rejectedDocs[0])}>Re-request it</Button> };
+                    } else if (rejectedDocs.length > 1) {
+                        step = { tone: 'bad', icon: 'alert', title: `${rejectedDocs.length} documents were rejected`,
+                            text: `${rejectedDocs.map(docLabel).join(', ')}. A fresh link lets ${data.customerName.split(' ')[0]} upload them all again.`,
+                            action: <Button variant="primary" icon="link" onClick={() => openDialog('send')}>Send a fresh link</Button> };
+                    } else if (lastLink) {
+                        step = { tone: 'wait', icon: 'clock', title: `Waiting on ${data.customerName.split(' ')[0]}`,
+                            text: `Link sent ${relative(lastLink.sentAt)} via ${liveLinks.map(l => l.channel).join(', ')}. ${waiting} document${waiting > 1 ? 's' : ''} still to come.`,
+                            action: <Button variant="primary" icon="bell" onClick={() => openDialog('remind')}>Send a reminder</Button> };
+                    } else {
+                        step = { tone: 'wait', icon: 'link', title: 'No upload link sent yet',
+                            text: `${data.customerName.split(' ')[0]} can't upload anything until they have a link.`,
+                            action: <Button variant="primary" icon="link" onClick={() => openDialog('send')}>Send upload link</Button> };
+                    }
+                    return (
+                        <div className={`next-step ${step.tone}`}>
+                            <span className="ns-icon"><Icon name={step.icon} size={17} /></span>
+                            <div className="ns-body">
+                                <div className="ns-title">{step.title}</div>
+                                <div className="ns-text">{step.text}</div>
+                            </div>
+                            {step.action}
+                        </div>
+                    );
+                })()}
 
                 <div className="metrics">
                     <div className="metric">

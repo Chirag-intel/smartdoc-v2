@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import AppShell from '@/components/AppShell';
 import Icon from '@/components/Icon';
-import { Button, Pill, Empty, initials, fmtDate, fmtTime, elapsed } from '@/components/ui';
+import { Button, Pill, Empty, initials, fmtDate, elapsed } from '@/components/ui';
 
 const FILTERS = [
     { id: 'all',       label: 'All' },
@@ -35,6 +35,35 @@ function SkeletonRows() {
             <td><div className="skel" style={{ width: 54, height: 24, marginLeft: 'auto' }} /></td>
         </tr>
     ));
+}
+
+// What does this case need from the ops officer right now? One verb per row,
+// and the button opens the case with that action already queued up.
+function nextStep(c) {
+    const live = (c.links || []).some(l => l.status !== 'expired');
+    if (c.status === 'completed') return { label: 'View', icon: 'arrowRight', query: '', title: 'All documents verified' };
+    if (c.status === 'rejected') return { label: 'Review', icon: 'alert', query: '', primary: true, title: 'A document was rejected — re-request it' };
+    if (live) return { label: 'Remind', icon: 'bell', query: '?remind=1', title: 'A link is live — nudge the applicant' };
+    return { label: 'Send link', icon: 'link', query: '?send_link=1', primary: true, title: 'No upload link sent yet' };
+}
+
+function MetricFilter({ id, color, label, value, note, filter, setFilter }) {
+    const on = filter === id;
+    return (
+        <button
+            type="button" className="metric is-filter" aria-pressed={on}
+            onClick={() => setFilter(on ? 'all' : id)}
+            title={on ? 'Show all cases' : `Show only ${label.toLowerCase()}`}
+        >
+            <div className="metric-top">
+                {color && <span className="dot" style={{ background: color }} />}
+                <span className="metric-label">{label}</span>
+            </div>
+            <div className="metric-val tnum">{value}</div>
+            <div className="metric-note">{note}</div>
+            <div className="metric-hint"><Icon name="filter" size={11} />{on ? 'Showing only these · click to clear' : 'Click to filter the list'}</div>
+        </button>
+    );
 }
 
 export default function QueuePage() {
@@ -109,22 +138,10 @@ export default function QueuePage() {
                         <div className="metric-val tnum">{openCases}</div>
                         <div className="metric-note">of {s.total || 0} total</div>
                     </div>
-                    <div className="metric">
-                        <div className="metric-top">
-                            <span className="dot" style={{ background: 'var(--pending)' }} />
-                            <span className="metric-label">Awaiting customer</span>
-                        </div>
-                        <div className="metric-val tnum">{s.pending || 0}</div>
-                        <div className="metric-note">no document received yet</div>
-                    </div>
-                    <div className="metric">
-                        <div className="metric-top">
-                            <span className="dot" style={{ background: 'var(--bad)' }} />
-                            <span className="metric-label">Needs action</span>
-                        </div>
-                        <div className="metric-val tnum">{s.rejected || 0}</div>
-                        <div className="metric-note">validation failed or overridden</div>
-                    </div>
+                    <MetricFilter id="pending" color="var(--pending)" label="Awaiting customer"
+                        value={s.pending || 0} note="no document received yet" filter={filter} setFilter={setFilter} />
+                    <MetricFilter id="rejected" color="var(--bad)" label="Needs action"
+                        value={s.rejected || 0} note="validation failed or overridden" filter={filter} setFilter={setFilter} />
                     <div className="metric">
                         <div className="metric-top">
                             <span className="dot" style={{ background: 'var(--ok)' }} />
@@ -133,11 +150,8 @@ export default function QueuePage() {
                         <div className="metric-val tnum">{s.collectedDocs || 0}<small> / {s.totalDocs || 0}</small></div>
                         <div className="track ok" style={{ marginTop: 7 }}><i style={{ width: `${docPct}%` }} /></div>
                     </div>
-                    <div className="metric">
-                        <div className="metric-top"><span className="metric-label">Completed</span></div>
-                        <div className="metric-val tnum">{s.completed || 0}</div>
-                        <div className="metric-note">fully verified cases</div>
-                    </div>
+                    <MetricFilter id="completed" label="Completed"
+                        value={s.completed || 0} note="fully verified cases" filter={filter} setFilter={setFilter} />
                 </div>
 
                 <div className="toolbar">
@@ -211,13 +225,22 @@ export default function QueuePage() {
                                             <td><Pill status={c.status} /></td>
                                             <td>
                                                 <div className="tnum" style={{ fontSize: 13 }}>{fmtDate(c.createdAt)}</div>
-                                                <div className="cell-sub tnum">{fmtTime(c.createdAt)} · {elapsed(c.createdAt, c.completedAt)} TAT</div>
+                                                <div className="cell-sub tnum">
+                                                    {c.completedAt ? `closed in ${elapsed(c.createdAt, c.completedAt)}` : `open ${elapsed(c.createdAt)}`}
+                                                </div>
                                             </td>
                                             <td>
-                                                <Link
-                                                    href={`/cases/${c.id}`} className="btn btn-sm"
-                                                    onClick={e => e.stopPropagation()}
-                                                >Open<Icon name="arrowRight" size={14} /></Link>
+                                                {(() => {
+                                                    const next = nextStep(c);
+                                                    return (
+                                                        <Link
+                                                            href={`/cases/${c.id}${next.query}`}
+                                                            className={`btn btn-sm ${next.primary ? 'btn-primary' : ''}`}
+                                                            onClick={e => e.stopPropagation()}
+                                                            title={next.title}
+                                                        ><Icon name={next.icon} size={14} />{next.label}</Link>
+                                                    );
+                                                })()}
                                             </td>
                                         </tr>
                                     );

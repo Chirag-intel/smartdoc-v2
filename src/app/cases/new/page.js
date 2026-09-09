@@ -204,6 +204,17 @@ export default function NewCasePage() {
                                 <Row k="Documents" v={`${docs.length}`} />
                                 <Row k="Channels ready" v={[form.customerPhone && 'SMS', form.customerPhone && 'WhatsApp', form.customerEmail && 'Email'].filter(Boolean).join(', ') || 'none yet'} />
                             </div>
+                            <div className="panel-body">
+                                <div style={{ fontSize: 12.5, fontWeight: 550, color: 'var(--ink)', marginBottom: 8 }}>
+                                    {firstError ? 'Before you can send' : 'Ready to send'}
+                                </div>
+                                <div className="ready">
+                                    <Ready done={!errors.customerName}>Applicant name</Ready>
+                                    <Ready done={!errors.customerPhone}>Mobile number for the link</Ready>
+                                    <Ready done={!errors.docs}>At least one document</Ready>
+                                    {docs.some(d => d.isOther) && <Ready done={!errors.otherLabels}>Custom documents named</Ready>}
+                                </div>
+                            </div>
                             <div className="panel-body" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                                 <Button variant="primary" className="btn-block" icon="link"
                                     loading={busy === 'send'} disabled={!!busy}
@@ -224,6 +235,15 @@ export default function NewCasePage() {
             </div>
             {toasts}
         </AppShell>
+    );
+}
+
+function Ready({ done, children }) {
+    return (
+        <div className={`ready-row ${done ? 'done' : ''}`}>
+            <span className="rd"><Icon name="check" size={10} strokeWidth={3} /></span>
+            {children}
+        </div>
     );
 }
 

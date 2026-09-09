@@ -711,3 +711,42 @@ table.data tbody tr:focus-visible { outline: 2px solid var(--accent); outline-of
 .assist-status .eq { color: var(--brand); flex: none; }
 .assist-progress { flex: 1; height: 3px; border-radius: 2px; background: var(--surface-3); overflow: hidden; }
 .assist-progress > i { display: block; height: 100%; background: var(--brand); border-radius: 2px; transition: width var(--t-slow); }
+
+/* ══ Intuitiveness pass ═══════════════════════════════════════════ */
+
+/* Metric cells that double as filters — same dimension as the chips below,
+   so clicking a number narrows the table to exactly what it counts. */
+.metric.is-filter {
+  cursor: pointer; text-align: left; font: inherit;
+  /* Buttons centre their content; align with the plain cells instead. */
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;
+  transition: background var(--t-fast), box-shadow var(--t-fast);
+}
+.metric.is-filter:focus-visible { outline-offset: -3px; border-radius: 0; }
+.metric.is-filter:hover { background: var(--surface-2); }
+.metric.is-filter[aria-pressed='true'] { background: var(--brand-weak); box-shadow: inset 0 -2px 0 var(--brand); }
+.metric.is-filter[aria-pressed='true'] .metric-label { color: var(--brand); }
+.metric-hint { font-size: 11.5px; color: var(--ink-3); margin-top: 5px; display: flex; align-items: center; gap: 4px; opacity: 0; transition: opacity var(--t-fast); }
+.metric.is-filter:hover .metric-hint, .metric.is-filter[aria-pressed='true'] .metric-hint { opacity: 1; }
+
+/* "Next step" banner — one sentence on what is blocking, one button that does it. */
+.next-step {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  padding: 13px 16px; margin-bottom: 18px;
+  border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface);
+}
+.next-step .ns-icon { width: 34px; height: 34px; flex: none; border-radius: var(--r-md); display: grid; place-items: center; background: var(--surface-2); border: 1px solid var(--line); color: var(--ink-3); }
+.next-step .ns-body { flex: 1; min-width: 220px; }
+.next-step .ns-title { font-size: 14px; font-weight: 600; color: var(--ink); }
+.next-step .ns-text { font-size: 13px; color: var(--ink-3); margin-top: 1px; }
+.next-step.ok  { border-color: var(--ok-line); }      .next-step.ok .ns-icon  { background: var(--ok-bg); border-color: var(--ok-line); color: var(--ok); }
+.next-step.bad { border-color: var(--bad-line); }     .next-step.bad .ns-icon { background: var(--bad-bg); border-color: var(--bad-line); color: var(--bad); }
+.next-step.wait{ border-color: var(--pending-line); } .next-step.wait .ns-icon{ background: var(--pending-bg); border-color: var(--pending-line); color: var(--pending); }
+
+/* Readiness checklist in the new-case summary — say what is missing before
+   the user finds out from an error. */
+.ready { display: flex; flex-direction: column; gap: 7px; }
+.ready-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-3); }
+.ready-row .rd { width: 16px; height: 16px; border-radius: 50%; flex: none; display: grid; place-items: center; border: 1.5px solid var(--line-strong); color: transparent; transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast); }
+.ready-row.done { color: var(--ink-2); }
+.ready-row.done .rd { background: var(--ok); border-color: var(--ok); color: var(--ink-invert); }
