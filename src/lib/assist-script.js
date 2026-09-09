@@ -15,6 +15,11 @@
 // `id` is the ElevenLabs voice id used to render the pack. Swap an id here
 // and re-run `npm run voices -- --force` to recast a language entirely.
 //
+// Hindi lines code-switch: Hindi grammar, but English-origin terms (PAN card,
+// bank statement, PDF, DigiLocker) stay in Latin script. Written in Devanagari
+// a multilingual model reads them as unfamiliar Hindi words; in Latin it
+// applies English phonetics — which is also how they are actually said.
+//
 // Note: ElevenLabs' Voice Library voices (Tara, Riya Rao, Sia, Zara…) require
 // a paid plan to use over the API — the free tier only permits ElevenLabs'
 // own premade voices, which is what these are. On a paid plan, swap `id` for
@@ -48,15 +53,15 @@ export const CLIPS = {
     },
 
     /* ── How many are left ─────────────────────────────────────────── */
-    pending_1:    { en: 'You have one document left.',    hi: 'आपका एक डॉक्यूमेंट बाकी है।' },
-    pending_2:    { en: 'You have two documents left.',   hi: 'आपके दो डॉक्यूमेंट बाकी हैं।' },
-    pending_3:    { en: 'You have three documents left.', hi: 'आपके तीन डॉक्यूमेंट बाकी हैं।' },
-    pending_4:    { en: 'You have four documents left.',  hi: 'आपके चार डॉक्यूमेंट बाकी हैं।' },
-    pending_5:    { en: 'You have five documents left.',  hi: 'आपके पाँच डॉक्यूमेंट बाकी हैं।' },
-    pending_6:    { en: 'You have six documents left.',   hi: 'आपके छह डॉक्यूमेंट बाकी हैं।' },
-    pending_7:    { en: 'You have seven documents left.', hi: 'आपके सात डॉक्यूमेंट बाकी हैं।' },
-    pending_8:    { en: 'You have eight documents left.', hi: 'आपके आठ डॉक्यूमेंट बाकी हैं।' },
-    pending_many: { en: 'You have a few documents left.', hi: 'आपके कुछ डॉक्यूमेंट बाकी हैं।' },
+    pending_1:    { en: 'You have one document left.',    hi: 'आपका एक document बाकी है।' },
+    pending_2:    { en: 'You have two documents left.',   hi: 'आपके दो documents बाकी हैं।' },
+    pending_3:    { en: 'You have three documents left.', hi: 'आपके तीन documents बाकी हैं।' },
+    pending_4:    { en: 'You have four documents left.',  hi: 'आपके चार documents बाकी हैं।' },
+    pending_5:    { en: 'You have five documents left.',  hi: 'आपके पाँच documents बाकी हैं।' },
+    pending_6:    { en: 'You have six documents left.',   hi: 'आपके छह documents बाकी हैं।' },
+    pending_7:    { en: 'You have seven documents left.', hi: 'आपके सात documents बाकी हैं।' },
+    pending_8:    { en: 'You have eight documents left.', hi: 'आपके आठ documents बाकी हैं।' },
+    pending_many: { en: 'You have a few documents left.', hi: 'आपके कुछ documents बाकी हैं।' },
 
     list_intro: {
         en: 'Here is what is still pending.',
@@ -64,42 +69,42 @@ export const CLIPS = {
     },
 
     /* ── One clip per document type, so the guide can name them ────── */
-    doc_pan_card:       { en: 'Your PAN card.',        hi: 'आपका पैन कार्ड।' },
-    doc_aadhaar_card:   { en: 'Your Aadhaar card.',    hi: 'आपका आधार कार्ड।' },
-    doc_address_proof:  { en: 'Your address proof.',   hi: 'आपका एड्रेस प्रूफ़।' },
-    doc_bank_statement: { en: 'Your bank statement.',  hi: 'आपका बैंक स्टेटमेंट।' },
-    doc_passport:       { en: 'Your passport.',        hi: 'आपका पासपोर्ट।' },
-    doc_photograph:     { en: 'Your photograph.',      hi: 'आपकी फ़ोटो।' },
-    doc_salary_slip:    { en: 'Your salary slip.',     hi: 'आपकी सैलरी स्लिप।' },
-    doc_itr:            { en: 'Your income tax return.', hi: 'आपकी इनकम टैक्स रिटर्न।' },
-    doc_signature:      { en: 'Your signature.',       hi: 'आपका हस्ताक्षर।' },
-    doc_other:          { en: 'And one more document listed on the page.', hi: 'और एक डॉक्यूमेंट, जो पेज पर लिखा है।' },
+    doc_pan_card:       { en: 'Your PAN card.',        hi: 'आपका PAN card।' },
+    doc_aadhaar_card:   { en: 'Your Aadhaar card.',    hi: 'आपका आधार card।' },
+    doc_address_proof:  { en: 'Your address proof.',   hi: 'आपका address proof।' },
+    doc_bank_statement: { en: 'Your bank statement.',  hi: 'आपका bank statement।' },
+    doc_passport:       { en: 'Your passport.',        hi: 'आपका passport।' },
+    doc_photograph:     { en: 'Your photograph.',      hi: 'आपकी photo।' },
+    doc_salary_slip:    { en: 'Your salary slip.',     hi: 'आपकी salary slip।' },
+    doc_itr:            { en: 'Your income tax return.', hi: 'आपका Income Tax Return।' },
+    doc_signature:      { en: 'Your signature.',       hi: 'आपका signature।' },
+    doc_other:          { en: 'And one more document listed on the page.', hi: 'और एक document, जो page पर लिखा है।' },
     doc_more:           { en: 'And a few more listed below.', hi: 'और कुछ और, जो नीचे दिए गए हैं।' },
 
     /* ── Instructions ──────────────────────────────────────────────── */
     retry: {
         en: 'Some of these were not accepted last time. Look for the note in red, then upload a clearer copy.',
-        hi: 'इनमें से कुछ पिछली बार स्वीकार नहीं हुए थे। लाल रंग में लिखा नोट देखिए, और साफ़ कॉपी अपलोड कीजिए।',
+        hi: 'इनमें से कुछ पिछली बार accept नहीं हुए थे। लाल रंग में लिखा note देखिए, और साफ़ copy upload कीजिए।',
     },
     digilocker: {
         en: 'If you use DigiLocker, you can fetch your PAN and Aadhaar together in one go. That is the fastest way, and it never gets rejected.',
-        hi: 'अगर आप डिजिलॉकर इस्तेमाल करते हैं, तो पैन और आधार एक साथ ला सकते हैं। यह सबसे तेज़ तरीका है, और यह कभी रिजेक्ट नहीं होता।',
+        hi: 'अगर आप DigiLocker इस्तेमाल करते हैं, तो PAN और आधार एक साथ ला सकते हैं। यह सबसे तेज़ तरीका है, और यह कभी reject नहीं होता।',
     },
     aa: {
         en: 'For your bank statement, tap Fetch from your bank. It comes straight from your bank over the R B I Account Aggregator network.',
-        hi: 'बैंक स्टेटमेंट के लिए, बैंक से लाएँ पर टैप कीजिए। यह सीधे आपके बैंक से, आर बी आई अकाउंट एग्रीगेटर नेटवर्क के ज़रिए आता है।',
+        hi: 'Bank statement के लिए, Fetch from your bank पर tap कीजिए। यह सीधे आपके bank से, RBI Account Aggregator network के ज़रिए आता है।',
     },
     upload: {
         en: 'To upload a file, tap the upload box and choose a photo or PDF. Keep the whole document inside the frame, and make sure the text is easy to read.',
-        hi: 'फ़ाइल अपलोड करने के लिए, अपलोड बॉक्स पर टैप कीजिए और फ़ोटो या पीडीएफ़ चुनिए। पूरा डॉक्यूमेंट फ्रेम के अंदर रखिए, और ध्यान रखिए कि लिखा हुआ साफ़ पढ़ा जा सके।',
+        hi: 'File upload करने के लिए, upload box पर tap कीजिए और photo या PDF चुनिए। पूरा document frame के अंदर रखिए, और ध्यान रखिए कि लिखा हुआ साफ़ पढ़ा जा सके।',
     },
     outro: {
         en: 'That is everything. Tap Need help any time and I will run through it again.',
-        hi: 'बस इतना ही। कभी भी हेल्प पर टैप कीजिए, मैं फिर से बता दूँगी।',
+        hi: 'बस इतना ही। कभी भी Need help पर tap कीजिए, मैं फिर से बता दूँगी।',
     },
     done: {
         en: 'All your documents are verified. Tap Submit documents at the bottom to finish.',
-        hi: 'आपके सभी डॉक्यूमेंट वेरिफाई हो गए हैं। नीचे सबमिट डॉक्यूमेंट्स पर टैप करके पूरा कीजिए।',
+        hi: 'आपके सभी documents verify हो गए हैं। नीचे Submit documents पर tap करके पूरा कीजिए।',
     },
 };
 

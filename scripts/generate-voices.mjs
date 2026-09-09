@@ -6,6 +6,7 @@
 //   npm run voices              # generate anything missing
 //   npm run voices -- --force   # re-render everything
 //   npm run voices -- --list    # print the script without calling the API
+//   npm run voices -- --force --lang hi   # re-render one language only
 //
 // Reads ELEVENLABS_API_KEY from the environment or .env.local.
 // Voice ids are looked up by name, so you do not have to hunt for them —
@@ -19,6 +20,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const args = new Set(process.argv.slice(2));
 const FORCE = args.has('--force');
+const langArg = process.argv.find((a, i) => process.argv[i - 1] === '--lang');
+const ONLY = langArg ? langArg.split(',') : null;             // --lang hi  |  --lang en,hi
 const LIST = args.has('--list');
 
 const { CLIPS, VOICES } = await import(pathToFileURL(join(root, 'src/lib/assist-script.js')).href);
@@ -37,7 +40,9 @@ function loadEnv() {
 }
 loadEnv();
 
-const langs = Object.keys(VOICES);
+const allLangs = Object.keys(VOICES);
+const langs = ONLY ? allLangs.filter(l => ONLY.includes(l)) : allLangs;
+if (ONLY && !langs.length) { console.error(`Unknown --lang ${langArg}. Known: ${allLangs.join(', ')}`); process.exit(1); }
 const entries = Object.entries(CLIPS);
 const suppliedFor = (v, lang) => (Array.isArray(v.supplied) ? v.supplied.includes(lang) : Boolean(v.supplied));
 const todo = entries.filter(([, v]) => langs.some(l => !suppliedFor(v, l)));
